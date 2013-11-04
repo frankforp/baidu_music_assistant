@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+
+  "name": "BaiduMusicRank",
+  "description": "提升歌曲在百度音乐中的排名",
+  "version": "1.0",
+
+  "permissions": [
+    "http://music.baidu.com/",
+    "notifications"
+  ],
+  "content_scripts":[
+    {
+      "matches":["http://music.baidu.com/*"],
+      "js":["jQuery2.0.3.js","search.js"]
+    },
+    {
+      "matches":["http://play.baidu.com/*"],
+      "js":["jQuery2.0.3.js","play.js"]
+    },
+    {
+      "matches":["http://192.168.1.1/*"],
+      "js":["jQuery2.0.3.js","route.js"]
+    }
+  ]
+}
