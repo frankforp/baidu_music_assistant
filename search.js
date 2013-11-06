@@ -1,4 +1,4 @@
-var keyword = '九百九十九朵玫瑰';
+var keyword = '爆发+朱娜';
 var refreshTime = 3 * 60 * 1000;
 if (location.search.indexOf('key=' + encodeURIComponent(keyword)) != -1) {
     setTimeout(function() {
@@ -41,6 +41,10 @@ function checkIsOnline(fn) {
     });
 }
 
+if (!chrome.cookies) {
+    // chrome.cookies = chrome.experimental.cookies;
+}
+
 function deleteCookie(name) {
     var exp = new Date();
     exp.setTime(exp.getTime() - 1);
@@ -48,11 +52,7 @@ function deleteCookie(name) {
 }
 
 function clearCookie() {
-    var temp = document.cookie.split(";");
-    var loop;
-    var ts;
-    for (loop = 0; loop < temp.length; loop++) {
-        ts = temp[loop].split("=")[0];
-        deleteCookie(ts);
-    }
+    // chrome.cookies.getAll({}, function(cookies) {
+    //     alert(cookies);
+    // });
 }
