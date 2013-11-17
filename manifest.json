@@ -8,8 +8,12 @@
   "permissions": [
     "cookies",
     "notifications",
+    "browsingData",
     "*://baidu.com/*"
   ],
+  "background":{
+    "scripts":["daemon.js"]
+  },
   "options_page": "options.html",
   "content_scripts":[
     {

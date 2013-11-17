@@ -2,7 +2,7 @@ var disconn = jQuery('[name=Disconnect]');
 var conn = jQuery('[name=Connect]');
 var stat = jQuery('#linkStat');
 
-var time = 1 * 1000 * 60;
+var time = 3 * 1000 * 60;
 
 setTimeout(function run(){
     offline();

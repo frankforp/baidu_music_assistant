@@ -1,22 +1,28 @@
-var keyword = '爆发+朱娜';
-var refreshTime = 3 * 60 * 1000;
+var keyword = '报告司令+朱娜';
+var refreshTime = 5 * 60 * 1000;
 if (location.search.indexOf('key=' + encodeURIComponent(keyword)) != -1) {
     setTimeout(function() {
         search(keyword);
     }, refreshTime);
 } else {
-    search(keyword);
+    search(keyword, true);
 }
 
 document.title = 'working...';
-clearCookie();
+
 jQuery('.list-micon')[0].click();
 
-function search(keyword) {
+function search(keyword, refresh) {
     checkIsOnline(function(isOnline) {
         if (isOnline) {
-            jQuery('#ww').val(keyword);
-            jQuery('.s_btn').click();
+            clearCookie();
+            if (refresh) {
+                jQuery('#ww').val(keyword);
+                jQuery('.s_btn').click();
+            } else {
+                jQuery.get('/search?key=' + encodeURIComponent(keyword));
+                jQuery('.list-micon')[0].click();
+            }
         } else {
             setTimeout(function() {
                 search(keyword);
@@ -24,6 +30,15 @@ function search(keyword) {
         }
     });
 }
+
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if (request.action == "playend"){
+            search(keyword);
+            sendResponse({});
+        }
+    }
+);
 
 function checkIsOnline(fn) {
     var ajax = jQuery.get('http://music.baidu.com/?' + Date.now(), function(data) {
@@ -41,18 +56,14 @@ function checkIsOnline(fn) {
     });
 }
 
-if (!chrome.cookies) {
-    // chrome.cookies = chrome.experimental.cookies;
-}
-
 function deleteCookie(name) {
     var exp = new Date();
     exp.setTime(exp.getTime() - 1);
-    document.cookie = name + "=delete; expires=" + exp.toGMTString();
+    document.cookie = name + "=delete; expires=" + exp.toGMTString() + '; path=/; domain=.baidu.com';
 }
 
 function clearCookie() {
-    // chrome.cookies.getAll({}, function(cookies) {
-    //     alert(cookies);
-    // });
+    chrome.runtime.sendMessage({
+        action: "clearCookie"
+    }, function(response) {});
 }
