@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>百度音乐助手</title>
+    <style>
+      body{font-size:14px;padding: 0;margin: 0;}
+      #opt{position:fixed;top:0;background-color: rgba(0,0,0,0.8);color:white;width:100%;z-index: 10;padding: 10px 0;}
+      #log .log{margin:0px;padding:5px;}
+      #showplaywin{margin-left: 10px;}
+      #state{float:right;display: none;width: 300px;}
+      .state{float: right;margin-right: 20px;}
+      #time{display: inline-block;}
+    </style>
+    <script src="app://baidu_music/js/jQuery2.0.3.js" charset="utf-8"></script>
+    <script src="app://baidu_music/js/main.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <div id="opt">
+        <input type="checkbox" id="showplaywin"><label for="showplaywin">显示播放窗口</label>
+        <div id="state">
+            <div id="time" class="state"></div>
+            <div class="state">共播放<span id="count"></span>次</div>
+        </div>
+    </div>
+    <div id="log"></div>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+{
+    "name": "baidu_music_assistant",
+    "main": "index.html",
+    "window": {
+        "title": "baidu_music_assistant",
+        "icon": "link.png",
+        "toolbar": false,
+        "frame": true,
+        "width":800,
+        "height":600
+    },
+    "webkit":{
+        "plugin":true
+    },
+    "node-remote":"music.baidu.com",
+    "single-instance":false
+}
