@@ -39,7 +39,9 @@ if (location.search.indexOf('key=' + encodeURIComponent(keyword)) != -1) {
                 });
             });
             pwin.window.closeWin = function(){
-                pwin.close();
+                // pwin.close();
+                global.log('start to next search : ' + keyword);
+                search(keyword);
             };
             pwin.window.nodelog = global.log;
             pwin.window.ba_countdown = global.countdown;

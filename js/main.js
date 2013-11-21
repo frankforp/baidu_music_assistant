@@ -71,7 +71,7 @@ jQuery(function(){
     log('begin to load search window.');
 
     var swin = gui.Window.open('http://music.baidu.com/search?key=test',{
-        show:false,
+        show:true,
         frame:true,
         toolbar:true,
         webkit:{plugin:true}
