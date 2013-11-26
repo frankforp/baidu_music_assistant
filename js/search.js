@@ -1,71 +1,87 @@
-if(window.searchjs){
+if (window.searchjs) {
     return;
 }
 window.searchjs = true;
-var keyword = '伤心海+朱娜';
+var keyword = '爆发+朱娜';
+var path = require('path');
+var fs = require('fs');
+var configPath = path.join(path.dirname(process.execPath), 'baconf.json');
+var config;
+if (fs.existsSync(configPath)) {
+    config = JSON.parse(fs.readFileSync(configPath));
+    keyword = config.keyword;
+}
 
 var gui = require('nw.gui');
 var pwin;
+var origin_open;
 
 if (location.search.indexOf('key=' + encodeURIComponent(keyword)) != -1) {
     global.log('in search result window.');
-    var origin_open = window.open;
-    window.open = function(url){
-        if(pwin) return;
+    origin_open = window.open;
+    if(window.ba_searchTimer){
+        clearInterval(ba_searchTimer);
+    }
+    window.ba_searchTimer = setInterval(function() {
+        var r = Math.round(Math.random() * 1e5) + (new Date).getTime();
+        clearCookie();
+        jQuery.ajax('http://music.baidu.com/search?key=' + keyword, {
+            success: function() {
+                var search_urls = [
+                    'http://nsclick.baidu.com/v.gif?pid=304&url=&v=1.0.0&r=' + r + '&type=clicksearch&ref=music_web&key=' + keyword + '&search_res=1&page_type=first&page_num=1&sub=song',
+                    'http://nsclick.baidu.com/v.gif?pid=304&url=&v=1.0.0&r=' + r + '&type=clicksearch&page=searchresult&sub=song&logtype=exposure_pv&key=' + keyword + '&ref=music_web'
+                ];
+                search_urls.forEach(function(searchUrl) {
+                    jQuery.ajax(searchUrl);
+                });
+            }
+        });
+    }, 5000);
+
+    window.open = function(url) {
+        if (pwin) return;
         global.log('openning : ' + url);
-        pwin = gui.Window.open(url,{
-            webkit:{plugin:true},
-            show:false,
-            frame:false,
-            toolbar:false
+        pwin = gui.Window.open(url, {
+            webkit: {
+                plugin: true
+            },
+            show: false,
+            frame: false,
+            toolbar: false
         });
         global.pwin = pwin;
-        var retryTimer = setTimeout(function(){
-            pwin.close();
-            global.log('retry after 10 seconds.');
-            pwin = null;
-            global.pwin = null;
-            window.open(url);
-        },10000);
-        pwin.on('loaded',function(){
-            if(!pwin) return;
-            if(pwin.loaded) return;
+        pwin.on('loaded', function() {
+            if (!pwin) return;
+            if (pwin.loaded) return;
             pwin.loaded = true;
             global.log('play window loaded.');
-            global.attachScript(pwin.window,'app://baidu_music/js/jQuery2.0.3.js',function(){
-                global.attachScript(pwin.window,'app://baidu_music/js/play.js',function(){
-                    global.log('play.js attached.');
-                    pwin.window.iknowloaded();
-                });
+            global.attachScript(pwin.window, 'app://baidu_music/js/play.js', function() {
+                global.log('play.js attached.');
+                pwin.window.ba_loaded();
             });
-            pwin.window.closeWin = function(){
+            pwin.window.closeWin = function() {
                 // pwin.close();
                 global.log('start to next search : ' + keyword);
                 search(keyword);
+                pwin.window.ba_loaded();
             };
             pwin.window.nodelog = global.log;
             pwin.window.ba_countdown = global.countdown;
-            pwin.window.ba_playerr = function(){
+            pwin.window.ba_playtime = global.playtime;
+            pwin.window.ba_playerr = function() {
                 global.log('play error.');
-                pwin.close();
+                // pwin.close();
                 global.log('retry play.');
-                window.open(url);
+                search(keyword);
+                pwin.window.ba_loaded();
             };
-            pwin.window.ba_success = function(){
+            pwin.window.ba_success = function() {
                 global.incCount();
             };
-            pwin.window.stopTimer = function(){
-                clearTimeout(retryTimer);
-            };
+            pwin.on('closed', function() {
+                gui.App.quit();
+            });
         });
-        pwin.on('closed',function(){
-            pwin = null;
-            global.pwin = null;
-            global.log('play window closed.');
-            global.log('start to next search : ' + keyword);
-            search(keyword);
-        });
-
         // window.top.setPlaySrc(url);
     };
     jQuery('.list-micon')[0].click();
@@ -90,7 +106,10 @@ function checkIsOnline(fn) {
     });
 }
 
+var subSWin;
+
 function search(keyword, refresh) {
+    global.log('current keyword is : ' + keyword);
     checkIsOnline(function(isOnline) {
         if (isOnline) {
             global.log('cookies of search window : ' + document.cookie);
@@ -98,9 +117,13 @@ function search(keyword, refresh) {
             if (refresh) {
                 jQuery('#ww').val(keyword);
                 jQuery('.s_btn').click();
+
             } else {
-                jQuery.get('/search?key=' + encodeURIComponent(keyword));
+                // jQuery.get('/search?key=' + encodeURIComponent(keyword));
                 jQuery('.list-micon')[0].click();
+                if (pwin) {
+                    pwin.window.ba_playtime = global.playtime;
+                }
             }
         } else {
             setTimeout(function() {
@@ -125,7 +148,7 @@ function clearCookie() {
         ts = temp[loop].split("=")[0];
         deleteCookie(ts);
     }
-    for(var i = 0; i < localStorage.length; i++){
+    for (var i = 0; i < localStorage.length; i++) {
         localStorage.removeItem(localStorage.key(i));
     }
 }

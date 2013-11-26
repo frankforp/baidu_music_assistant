@@ -3,39 +3,61 @@ if (window.playjs) {
 }
 window.playjs = true;
 
-window.iknowloaded = function() {
+var countdownTimer,checkTimer;
+
+function ba_startcountdown() {
     var totalTime = jQuery('.totalTime');
     var time = (totalTime.html());
     var arr = time.split(':');
     var min = parseInt(arr[0]);
     var sec = parseInt(arr[1]);
     var seconds = min * 60 + sec;
-
-    var countdown = 0 + 10;
-    setTimeout(function() {
+    if(window.ba_playtime){
+        seconds = parseInt(window.ba_playtime);
+    }
+    var countdown = seconds + 5;
+    nodelog('start countdown : ' + countdown);
+    countdownTimer = setTimeout(function() {
+        clearList();
         closeWin();
     }, countdown * 1000);
     window.ba_countdown(countdown);
-    window.nodelog('cookies of play window : ' + document.cookie);
-    clearCookie();
-    window.stopTimer();
-    setInterval(function() {
-        countdown--;
-        document.title = countdown + '秒后自动关闭';
-    }, 1000);
-};
-
-function ba_play(){
-    jQuery('.stop').find('.wg-button').click();
 }
 
-setTimeout(function() {
-    if (document.getElementsByClassName('curTime')[0].innerHTML == '00:00') {
-        window.ba_playerr();
-    } else {
-        window.ba_success();
+function clearList() {
+    nodelog('clear playlist.');
+    jQuery('.select-all-text').click();
+    setTimeout(function() {
+        jQuery('.delete-button').click();
+    }, 100);
+    setTimeout(function() {
+        jQuery('.ui-dialog-buttonset').find('.wg-button-inner')[0].click();
+    }, 200);
+};
+
+window.ba_loaded = function() {
+    ba_startcountdown();
+    window.nodelog('cookies of play window : ' + document.cookie);
+    clearCookie();
+    ba_check();
+};
+
+
+function ba_check() {
+    if(checkTimer){
+        clearTimeout(checkTimer);
     }
-}, 5000);
+    checkTimer = setTimeout(function() {
+        if (document.getElementsByClassName('curTime')[0].innerHTML == '00:00') {
+            clearList();
+            clearTimeout(countdownTimer);
+            window.ba_playerr();
+        } else {
+            window.ba_success();
+        }
+    }, 5000);
+
+}
 
 function deleteCookie(name) {
     var exp = new Date();
