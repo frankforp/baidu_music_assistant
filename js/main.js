@@ -12,10 +12,12 @@ var confPath = './';
 var confFile = fs.readFileSync(path.join(confPath, 'config.json'));
 var config = JSON.parse(confFile);
 
-global.playtime = localStorage.getItem('playtime');
+global.playtime = 60;
+// global.playtime = localStorage.getItem('playtime');
 
-function log(s) {
-    var log = '<p class="log">[' + (new Date()).toLocaleString() + '] ' + s + '</p>';
+function log(s,classname) {
+    classname = classname || 'log';
+    var log = '<p class="' + classname + '">[' + (new Date()).toLocaleString() + '] ' + s + '</p>';
     var logElem = document.getElementById('log');
     if (logs.length < maxLog) {
         logs.push(log);
@@ -26,6 +28,10 @@ function log(s) {
     logElem.innerHTML = logs.join('');
     var y = 99999;
     window.scrollTo(0, y);
+}
+
+global.error = function(s){
+    log(s,'error');
 }
 
 function attachScript(win, url, callback) {

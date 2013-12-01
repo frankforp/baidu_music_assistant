@@ -29,10 +29,10 @@ function clearList() {
     jQuery('.select-all-text').click();
     setTimeout(function() {
         jQuery('.delete-button').click();
-    }, 100);
+    }, 200);
     setTimeout(function() {
         jQuery('.ui-dialog-buttonset').find('.wg-button-inner')[0].click();
-    }, 200);
+    }, 500);
 };
 
 window.ba_loaded = function() {

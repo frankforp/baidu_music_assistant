@@ -2,13 +2,24 @@ if (window.searchjs) {
     return;
 }
 window.searchjs = true;
-var keyword = '爆发+朱娜';
-var path = require('path');
+var keyword = '恋爱大联盟+朱娜';
+try{
+    var path = require('path');
+}
+catch(e){
+    global.error('可能受到百度防护机制的限制，请更换ip后重启本软件。');
+    return;
+}
 var fs = require('fs');
 var configPath = path.join(path.dirname(process.execPath), 'baconf.json');
 var config;
 if (fs.existsSync(configPath)) {
-    config = JSON.parse(fs.readFileSync(configPath));
+    try{
+        config = JSON.parse(fs.readFileSync(configPath));    
+    }
+    catch(e){
+        alert(e.message);
+    }
     keyword = config.keyword;
 }
 
@@ -19,24 +30,6 @@ var origin_open;
 if (location.search.indexOf('key=' + encodeURIComponent(keyword)) != -1) {
     global.log('in search result window.');
     origin_open = window.open;
-    if(window.ba_searchTimer){
-        clearInterval(ba_searchTimer);
-    }
-    window.ba_searchTimer = setInterval(function() {
-        var r = Math.round(Math.random() * 1e5) + (new Date).getTime();
-        clearCookie();
-        jQuery.ajax('http://music.baidu.com/search?key=' + keyword, {
-            success: function() {
-                var search_urls = [
-                    'http://nsclick.baidu.com/v.gif?pid=304&url=&v=1.0.0&r=' + r + '&type=clicksearch&ref=music_web&key=' + keyword + '&search_res=1&page_type=first&page_num=1&sub=song',
-                    'http://nsclick.baidu.com/v.gif?pid=304&url=&v=1.0.0&r=' + r + '&type=clicksearch&page=searchresult&sub=song&logtype=exposure_pv&key=' + keyword + '&ref=music_web'
-                ];
-                search_urls.forEach(function(searchUrl) {
-                    jQuery.ajax(searchUrl);
-                });
-            }
-        });
-    }, 5000);
 
     window.open = function(url) {
         if (pwin) return;
